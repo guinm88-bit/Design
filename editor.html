@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>App-2 Editor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body { font-family: Arial; padding: 16px; }
+
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+
+    .block {
+      border: 2px solid #444;
+      padding: 10px;
+      margin-bottom: 15px;
+    }
+
+    .row {
+      border: 1px solid #ccc;
+      padding: 8px;
+      margin-bottom: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      border: 1px solid #000;
+      padding: 6px;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+
+<h2>Fabric Design Editor</h2>
+
+<select id="yarnCount" onchange="prefillByCount()">
+  <option value="">Select Yarn Count</option>
+  <option value="10">10s</option>
+  <option value="14">14s</option>
+  <option value="26">26s</option>
+  <option value="32">32s</option>
+  <option value="40">40s</option>
+  <option value="60">60s</option>
+  <option value="84">84s</option>
+</select>
+
+<input id="fabricLength" placeholder="Fabric Length">
+<input id="hankLength" placeholder="Yarn Length per Hank">
+<input id="designRepeat" value="1" placeholder="Repeat">
+<input id="wastage" value="0" placeholder="Wastage %">
+
+<select id="globalUnit">
+  <option value="inch">Inch</option>
+  <option value="cm">CM</option>
+</select>
+
+<div id="blocks"></div>
+
+<button onclick="addNewBlock()">Add Block</button>
+<button onclick="calculate()">Calculate</button>
+<button onclick="saveDesign()">Save Design</button>
+<button onclick="window.location.href='index.html'">Back</button>
+
+<h3>Weaver Instruction</h3>
+<div id="weaverTable"></div>
+
+<h3>Dyeing Instruction</h3>
+<div id="dyeTable"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
