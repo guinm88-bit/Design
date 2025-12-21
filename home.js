@@ -1,22 +1,18 @@
 function loadDesigns() {
   const list = document.getElementById("designList");
-  list.innerHTML = "";
-
   const designs = JSON.parse(localStorage.getItem("designs") || "[]");
 
   if (designs.length === 0) {
-    list.innerHTML = "<p>No designs yet</p>";
+    list.innerHTML = "<p>No saved designs</p>";
     return;
   }
 
   designs.forEach((d, i) => {
     const div = document.createElement("div");
-    div.className = "design";
     div.innerHTML = `
-      <strong>${d.name}</strong><br>
-      Yarn: ${d.yarn}s
+      <b>${d.name}</b>
+      <button onclick="openDesign(${i})">Open</button>
     `;
-    div.onclick = () => openDesign(i);
     list.appendChild(div);
   });
 }
@@ -26,9 +22,9 @@ function newDesign() {
   window.location.href = "editor.html";
 }
 
-function openDesign(index) {
-  localStorage.setItem("currentDesign", index);
+function openDesign(i) {
+  localStorage.setItem("currentDesign", i);
   window.location.href = "editor.html";
 }
 
-loadDesigns();
+window.onload = loadDesigns;
