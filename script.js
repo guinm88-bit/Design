@@ -34,27 +34,103 @@ function addRowToBlock(b,c="",w=""){
   b.querySelector(".rows").appendChild(r);
 }
 
-function calculate(){
-  const tpi=threadsPerInch(+yarnCount.value);
-  let base=0, dye={};
-  document.querySelectorAll(".row").forEach(r=>{
-    const c=r.querySelector(".color").value;
-    const w=r.querySelector(".width").value;
-    if(!c||!w) return;
-    const th=toInches(+w,globalUnit.value)*tpi;
-    base+=th;
-    dye[c]=(dye[c]||0)+th;
+function calculate() {
+  const yarn = Number(document.getElementById("yarnCount").value);
+  const fabricLength = Number(document.getElementById("fabricLength").value);
+  const hankLength = Number(document.getElementById("hankLength").value);
+  const wastage = Number(document.getElementById("wastage").value || 0);
+  const repeat = Number(document.getElementById("designRepeat").value || 1);
+
+  const tpi = threadsPerInch(yarn);
+
+  if (!fabricLength || !hankLength || !tpi) {
+    alert("Please fill Yarn count, Fabric length and Hank length");
+    return;
+  }
+
+  let baseThreads = 0;
+  let dyeTotals = {};
+  let seq = 1;
+
+  let weaverHTML = `
+    <table border="1" cellpadding="5">
+    <tr><th>Seq</th><th>Colour</th><th>Threads</th></tr>
+  `;
+
+  document.querySelectorAll(".row").forEach(r => {
+    const c = r.querySelector(".color")?.value?.trim();
+    const w = Number(r.querySelector(".width")?.value);
+
+    if (!c || !w || w <= 0) return;
+
+    const threads = w * tpi;
+    baseThreads += threads;
+    dyeTotals[c] = (dyeTotals[c] || 0) + threads;
+
+    weaverHTML += `
+      <tr>
+        <td>${seq++}</td>
+        <td>${c}</td>
+        <td>${threads.toFixed(0)}</td>
+      </tr>
+    `;
   });
 
-  weaverTable.innerHTML=`Total Threads: ${base*designRepeat.value}`;
-
-  let out="<table><tr><th>Colour</th><th>Hanks</th></tr>";
-  for(let c in dye){
-    const h=(dye[c]*designRepeat.value*fabricLength.value)/hankLength.value;
-    out+=`<tr><td>${c}</td><td>${h.toFixed(2)}</td></tr>`;
+  if (baseThreads === 0) {
+    alert("No valid rows found");
+    return;
   }
-  out+="</table>";
-  dyeTable.innerHTML=out;
+
+  weaverHTML += `
+    <tr>
+      <th colspan="2">Base Total</th>
+      <th>${baseThreads.toFixed(0)}</th>
+    </tr>
+    <tr>
+      <th colspan="2">After Repeat × ${repeat}</th>
+      <th>${(baseThreads * repeat).toFixed(0)}</th>
+    </tr>
+  </table>
+  `;
+
+  document.getElementById("weaverTable").innerHTML = weaverHTML;
+
+  let dyeHTML = `
+    <table border="1" cellpadding="5">
+    <tr><th>Colour</th><th>Total Threads</th><th>Hanks</th></tr>
+  `;
+
+  let totalThreads = 0;
+  let totalHanks = 0;
+
+  for (const c in dyeTotals) {
+    const threads = dyeTotals[c] * repeat;
+    const yarnLen = threads * fabricLength;
+    const yarnWithWaste = yarnLen + (yarnLen * wastage / 100);
+    const hanks = yarnWithWaste / hankLength;
+
+    totalThreads += threads;
+    totalHanks += hanks;
+
+    dyeHTML += `
+      <tr>
+        <td>${c}</td>
+        <td>${threads.toFixed(0)}</td>
+        <td>${hanks.toFixed(2)}</td>
+      </tr>
+    `;
+  }
+
+  dyeHTML += `
+    <tr>
+      <th>TOTAL</th>
+      <th>${totalThreads.toFixed(0)}</th>
+      <th>${totalHanks.toFixed(2)}</th>
+    </tr>
+  </table>
+  `;
+
+  document.getElementById("dyeTable").innerHTML = dyeHTML;
 }
 
 function saveDesign(){
@@ -103,3 +179,4 @@ function saveDesign(){
   globalUnit.value=d.unit;
   d.blocks.forEach(b=>addNewBlock(b));
 })();
+
