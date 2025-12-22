@@ -41,8 +41,59 @@ function addRow(btn) {
   const r = document.createElement("div");
   r.className = "row";
   r.innerHTML = `<input placeholder="Colour">
-                 <input type="number" placeholder="Width">`;
+                 <input type="number" placeholder="Width (inch)">`;
   rows.appendChild(r);
+}
+
+function calculate() {
+  const yarn = Number(document.getElementById("yarnCount").value);
+  const tpi = yarnDefaults[yarn].tpi;
+  const repeat = Number(document.getElementById("repeat").value || 1);
+  const fabricLength = Number(document.getElementById("fabricLength").value);
+  const hankLength = Number(document.getElementById("hankLength").value);
+
+  let colourThreads = {};
+
+  document.querySelectorAll(".row").forEach(r => {
+    const c = r.children[0].value.trim();
+    const w = Number(r.children[1].value);
+    if (!c || !w) return;
+
+    const threads = w * tpi;
+    colourThreads[c] = (colourThreads[c] || 0) + threads;
+  });
+
+  let baseTotal = 0;
+  let weaverText = "Colour\tThreads\n";
+
+  for (const c in colourThreads) {
+    weaverText += `${c}\t${colourThreads[c].toFixed(0)}\n`;
+    baseTotal += colourThreads[c];
+  }
+
+  weaverText += `\nBase Total: ${baseTotal.toFixed(0)} threads`;
+  weaverText += `\nAfter Repeat (${repeat}x): ${(baseTotal * repeat).toFixed(0)} threads`;
+
+  document.getElementById("weaverOutput").textContent = weaverText;
+
+  let dyeText = "Colour\tThreads\tHanks\n";
+  let totalThreads = 0;
+  let totalHanks = 0;
+
+  for (const c in colourThreads) {
+    const t = colourThreads[c] * repeat;
+    const yarnLen = t * fabricLength;
+    const hanks = yarnLen / hankLength;
+
+    dyeText += `${c}\t${t.toFixed(0)}\t${hanks.toFixed(2)}\n`;
+    totalThreads += t;
+    totalHanks += hanks;
+  }
+
+  dyeText += `\nTOTAL THREADS: ${totalThreads.toFixed(0)}`;
+  dyeText += `\nTOTAL HANKS: ${totalHanks.toFixed(2)}`;
+
+  document.getElementById("dyeOutput").textContent = dyeText;
 }
 
 function saveDesign() {
