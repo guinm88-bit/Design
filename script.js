@@ -10,95 +10,132 @@ const yarnDefaults = {
 
 let blockCount = 0;
 
+/* ---------- PREFILL ---------- */
 function prefill() {
   const y = document.getElementById("yarnCount").value;
+  if (!y) return;
+
   document.getElementById("fabricLength").value = 29;
   document.getElementById("hankLength").value = yarnDefaults[y].hank;
 }
 
-function addBlock(data) {
+/* ---------- BLOCKS & ROWS ---------- */
+function addBlock(data = []) {
   blockCount++;
-  const b = document.createElement("div");
-  b.className = "block";
-  b.innerHTML = `<b>Block ${blockCount}</b>
+
+  const block = document.createElement("div");
+  block.className = "block";
+
+  block.innerHTML = `
+    <b>Block ${blockCount}</b>
     <div class="rows"></div>
-    <button onclick="addRow(this)">Add Row</button>`;
-  document.getElementById("blocks").appendChild(b);
+    <button onclick="addRow(this)">Add Row</button>
+  `;
 
-  for (let i = 0; i < 3; i++) addRow(b.querySelector("button"));
+  document.getElementById("blocks").appendChild(block);
 
-  if (data) {
-    const rows = b.querySelector(".rows").children;
-    data.forEach((r, i) => {
-      rows[i].children[0].value = r.color;
-      rows[i].children[1].value = r.width;
+  if (data.length === 0) {
+    for (let i = 0; i < 3; i++) addRow(block.querySelector("button"));
+  } else {
+    data.forEach(r => {
+      addRow(block.querySelector("button"), r.color, r.width);
     });
   }
 }
 
-function addRow(btn) {
+function addRow(btn, color = "", width = "") {
   const rows = btn.previousElementSibling;
-  const r = document.createElement("div");
-  r.className = "row";
-  r.innerHTML = `<input placeholder="Colour">
-                 <input type="number" placeholder="Width (inch)">`;
-  rows.appendChild(r);
+
+  const row = document.createElement("div");
+  row.className = "row";
+  row.innerHTML = `
+    <input placeholder="Colour" value="${color}">
+    <input type="number" placeholder="Width (inch)" value="${width}">
+  `;
+
+  rows.appendChild(row);
 }
 
+/* ---------- CALCULATION ---------- */
 function calculate() {
-  const yarn = Number(document.getElementById("yarnCount").value);
-  const tpi = yarnDefaults[yarn].tpi;
+  const yarn = document.getElementById("yarnCount").value;
   const repeat = Number(document.getElementById("repeat").value || 1);
   const fabricLength = Number(document.getElementById("fabricLength").value);
   const hankLength = Number(document.getElementById("hankLength").value);
 
-  let colourThreads = {};
+  const weaverBox = document.getElementById("weaverOutput");
+  const dyeBox = document.getElementById("dyeOutput");
 
-  document.querySelectorAll(".row").forEach(r => {
-    const c = r.children[0].value.trim();
-    const w = Number(r.children[1].value);
-    if (!c || !w) return;
+  weaverBox.textContent = "";
+  dyeBox.textContent = "";
 
-    const threads = w * tpi;
-    colourThreads[c] = (colourThreads[c] || 0) + threads;
-  });
-
-  let baseTotal = 0;
-  let weaverText = "Colour\tThreads\n";
-
-  for (const c in colourThreads) {
-    weaverText += `${c}\t${colourThreads[c].toFixed(0)}\n`;
-    baseTotal += colourThreads[c];
+  if (!yarn || !fabricLength || !hankLength) {
+    weaverBox.textContent = "Please select yarn count and fill lengths.";
+    return;
   }
 
-  weaverText += `\nBase Total: ${baseTotal.toFixed(0)} threads`;
-  weaverText += `\nAfter Repeat (${repeat}x): ${(baseTotal * repeat).toFixed(0)} threads`;
+  const tpi = yarnDefaults[yarn].tpi;
+  let colourMap = {};
+  let hasValidRow = false;
 
-  document.getElementById("weaverOutput").textContent = weaverText;
+  document.querySelectorAll(".row").forEach(row => {
+    const colour = row.children[0].value.trim();
+    const width = Number(row.children[1].value);
 
+    if (!colour || width <= 0) return;
+
+    hasValidRow = true;
+    const threads = width * tpi;
+    colourMap[colour] = (colourMap[colour] || 0) + threads;
+  });
+
+  if (!hasValidRow) {
+    weaverBox.textContent = "No valid colour rows entered.";
+    return;
+  }
+
+  /* ---- Weaver Output ---- */
+  let weaverText = "Colour\tThreads\n";
+  let baseTotal = 0;
+
+  for (const c in colourMap) {
+    weaverText += `${c}\t${colourMap[c].toFixed(0)}\n`;
+    baseTotal += colourMap[c];
+  }
+
+  weaverText += `\nBase Total: ${baseTotal.toFixed(0)}`;
+  weaverText += `\nAfter Repeat (${repeat}x): ${(baseTotal * repeat).toFixed(0)}`;
+
+  weaverBox.textContent = weaverText;
+
+  /* ---- Dyeing Output ---- */
   let dyeText = "Colour\tThreads\tHanks\n";
   let totalThreads = 0;
   let totalHanks = 0;
 
-  for (const c in colourThreads) {
-    const t = colourThreads[c] * repeat;
-    const yarnLen = t * fabricLength;
+  for (const c in colourMap) {
+    const threads = colourMap[c] * repeat;
+    const yarnLen = threads * fabricLength;
     const hanks = yarnLen / hankLength;
 
-    dyeText += `${c}\t${t.toFixed(0)}\t${hanks.toFixed(2)}\n`;
-    totalThreads += t;
+    dyeText += `${c}\t${threads.toFixed(0)}\t${hanks.toFixed(2)}\n`;
+    totalThreads += threads;
     totalHanks += hanks;
   }
 
   dyeText += `\nTOTAL THREADS: ${totalThreads.toFixed(0)}`;
   dyeText += `\nTOTAL HANKS: ${totalHanks.toFixed(2)}`;
 
-  document.getElementById("dyeOutput").textContent = dyeText;
+  dyeBox.textContent = dyeText;
 }
 
+/* ---------- SAVE / LOAD ---------- */
 function saveDesign() {
   const name = document.getElementById("designName").value.trim();
-  if (!name) { alert("Enter design name"); return; }
+  if (!name) {
+    alert("Enter design name");
+    return;
+  }
 
   const design = {
     name,
@@ -109,9 +146,9 @@ function saveDesign() {
     blocks: []
   };
 
-  document.querySelectorAll(".block").forEach(b => {
+  document.querySelectorAll(".block").forEach(block => {
     const rows = [];
-    b.querySelectorAll(".row").forEach(r => {
+    block.querySelectorAll(".row").forEach(r => {
       const c = r.children[0].value;
       const w = r.children[1].value;
       if (c && w) rows.push({ color: c, width: w });
@@ -132,9 +169,14 @@ function saveDesign() {
 function loadDesign() {
   const idx = localStorage.getItem("currentDesign");
   prefill();
-  if (idx === null) { addBlock(); return; }
+
+  if (idx === null) {
+    addBlock();
+    return;
+  }
 
   const d = JSON.parse(localStorage.getItem("designs"))[idx];
+
   document.getElementById("designName").value = d.name;
   document.getElementById("yarnCount").value = d.yarn;
   document.getElementById("fabricLength").value = d.fabricLength;
