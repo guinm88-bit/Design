@@ -1,17 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <title>Designs</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <title>Fabric Designs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: Arial; padding: 16px; }
+    .card {
+      border: 1px solid #ccc;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+    }
+    .add {
+      font-size: 20px;
+      padding: 12px;
+      width: 100%;
+    }
+  </style>
 </head>
 <body>
 
 <h2>Saved Designs</h2>
 
-<div id="designList"></div>
+<div id="designs"></div>
 
-<button onclick="newDesign()">＋ New Design</button>
+<button class="add" onclick="newDesign()">➕ Create New Design</button>
 
 <script src="home.js"></script>
 </body>
