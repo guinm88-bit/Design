@@ -1,70 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8">
   <title>App-2 – Fabric Design → Yarn Planning</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 12px;
-      max-width: 900px;
-      margin: auto;
-    }
-    h1 {
-      font-size: 22px;
-    }
-    label {
-      font-weight: bold;
-      display: block;
-      margin-top: 10px;
-    }
-    input, select, button {
-      width: 100%;
-      padding: 8px;
-      margin-top: 4px;
-      font-size: 14px;
-    }
-    .row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-bottom: 6px;
-    }
-    .block {
-      border: 1px solid #ccc;
-      padding: 10px;
-      margin-top: 15px;
-    }
-    .block-title {
-      font-weight: bold;
-      margin-bottom: 6px;
-    }
-    button.small {
-      font-size: 13px;
-      padding: 6px;
-      margin-top: 6px;
-    }
-    hr {
-      margin: 15px 0;
-    }
-    .output {
-      margin-top: 20px;
-      padding: 10px;
-      border: 1px dashed #999;
-      white-space: pre-line;
-    }
+    body { font-family: Arial; padding: 16px; }
+    input, select, button { margin: 4px 0; padding: 6px; }
+    .block { border: 1px solid #ccc; padding: 10px; margin-top: 10px; }
+    .row { display: flex; gap: 6px; margin-bottom: 4px; }
+    .row input { flex: 1; }
   </style>
 </head>
-
 <body>
 
-<h1>App-2 – Fabric Design → Yarn Planning</h1>
+<h2>Fabric Design Editor</h2>
 
-<label>Yarn Count</label>
-<select id="yarnCount">
-  <option value="">Select</option>
+<label>Design Name</label><br>
+<input id="designName"><br>
+
+<label>Yarn Count</label><br>
+<select id="yarnCount" onchange="prefill()">
   <option value="10">10s</option>
   <option value="14">14s</option>
   <option value="26">26s</option>
@@ -72,40 +28,24 @@
   <option value="40">40s</option>
   <option value="60">60s</option>
   <option value="84">84s</option>
-</select>
+</select><br>
 
-<label>Fabric Length</label>
-<input type="number" id="fabricLength" step="0.01">
+<label>Fabric Length</label><br>
+<input type="number" id="fabricLength"><br>
 
-<label>Wastage (%)</label>
-<input type="number" id="wastage" value="0">
+<label>Yarn Length per Hank</label><br>
+<input type="number" id="hankLength"><br>
 
-<label>Yarn Length per Hank</label>
-<input type="number" id="hankLength">
-
-<label>Repeat (Design Multiplier)</label>
-<input type="number" id="designRepeat" value="1">
-
-<hr>
+<label>Repeat</label><br>
+<input type="number" id="repeat" value="1"><br>
 
 <div id="blocks"></div>
 
-<button onclick="addBlock()">➕ Add Block</button>
+<button onclick="addBlock()">Add Block</button><br><br>
 
-<hr>
-
-<button onclick="calculate()">Calculate</button>
 <button onclick="saveDesign()">Save Design</button>
-
-<div class="output" id="weaverOutput">
-<b>Weaver Instruction</b>
-</div>
-
-<div class="output" id="dyeOutput">
-<b>Dyeing Instruction</b>
-</div>
+<button onclick="window.location.href='index.html'">Back</button>
 
 <script src="script.js"></script>
-
 </body>
 </html>
