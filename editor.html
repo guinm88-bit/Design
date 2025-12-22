@@ -1,6 +1,65 @@
 <!DOCTYPE html>
 <html>
-<head>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    padding: 12px;
+    margin: 0;
+  }
+
+  h2, h3 {
+    margin-top: 20px;
+  }
+
+  input, select, button {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    margin-bottom: 8px;
+    box-sizing: border-box;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  .block {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 12px;
+    border-radius: 6px;
+  }
+
+  .actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .sticky-calc {
+    position: sticky;
+    bottom: 0;
+    background: #fff;
+    padding: 10px 0;
+    border-top: 1px solid #ccc;
+  }
+
+  @media (min-width: 768px) {
+    body {
+      max-width: 900px;
+      margin: auto;
+    }
+  }
+</style>
+
+  <head>
   <meta charset="UTF-8">
   <title>App-2 – Fabric Design → Yarn Planning</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -64,5 +123,6 @@
 <script src="script.js"></script>
 </body>
 </html>
+
 
 
