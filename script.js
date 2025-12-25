@@ -58,6 +58,17 @@ function addRow(btn, color = "", width = "") {
   rows.appendChild(row);
 }
 
+function updateRowThreads(input) {
+  const row = input.closest(".row");
+  const width = Number(input.value || 0);
+  const yarn = Number(document.getElementById("yarnCount").value);
+  const tpiMap = {10:42,14:48,26:60,32:64,40:74,60:80,84:96};
+  const tpi = tpiMap[yarn] || 0;
+
+  const threads = width * tpi;
+  row.querySelectorAll("input")[2].value = threads.toFixed(0);
+}
+
 /* ---------- CALCULATION ---------- */
 function calculate() {
   const yarn = document.getElementById("yarnCount").value;
@@ -189,4 +200,5 @@ function loadDesign() {
 }
 
 loadDesign();
+
 
