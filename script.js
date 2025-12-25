@@ -49,9 +49,11 @@ function addRow(btn, color = "", width = "") {
   const row = document.createElement("div");
   row.className = "row";
   row.innerHTML = `
-    <input placeholder="Colour" value="${color}">
-    <input type="number" placeholder="Width (inch)" value="${width}">
-  `;
+  <input placeholder="Colour" value="${color}">
+  <input type="number" placeholder="Width (inch)" value="${width}" oninput="updateRowThreads(this)">
+  <input placeholder="Threads" readonly>
+`;
+
 
   rows.appendChild(row);
 }
@@ -187,3 +189,4 @@ function loadDesign() {
 }
 
 loadDesign();
+
